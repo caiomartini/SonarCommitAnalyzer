@@ -25,9 +25,9 @@ C:\
     └ template\
         └ template.sonarsource.properties
 ```
-_Download sonar-scanner [here](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner)_
+_*Download sonar-scanner [here](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner)_
 
-_The template.sonarsource.properties file should contain the following content:_
+_*The template.sonarsource.properties file should contain the following content:_
 ```
 sonar.host.url={url}
 sonar.projectBaseDir={repository}
@@ -51,11 +51,12 @@ sonar.issuesReport.console.enable=true
 6. Update the commit_analyzer.py file to set config.ini path;
 7. Update the pre-commit file in the git hook folder of the repository. If the file does not exist, we should just create it.
 ```
-{Repository}\.git\hooks\pre-commit
+{ProjectRepository}\.git\hooks\pre-commit
 ```
 
-_The file should contain the following content:_
+_*The file should contain the following content:_
 ```
 #!/bin/sh
-python "{BaseFolder}\SonarCommitAnalyzer\main.py"
+python "{SonarCommitAnalyzerRepository}\SonarCommitAnalyzer\main.py"
 ```
+_*Update the {ProjectRepository} and {SonarCommitAnalyzerRepository} to your repository_
