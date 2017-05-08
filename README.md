@@ -9,10 +9,14 @@ Code analysis with SonarQube in pre-commit.
 ### Python libraries pre requirements
 - [GitPython](https://gitpython.readthedocs.io/en/stable/index.html)
 
-# First steps
-1. Clone this repo in folder;
+# Setting up
+1. Clone this repo;
 2. Install Python 3.6.1;
-3. Create the necessary folders to run the SonarQube. These folders should follow the example below:
+3. Install GitPython;
+```
+pip install GitPython
+```
+4. Create the necessary folders to run the SonarQube. These folders should follow the example below:
 ```
 C:\
 └ Sonar\
@@ -44,7 +48,9 @@ sonar.issuesReport.html.name=issues-report-{sistema}
 sonar.issuesReport.console.enable=true
 ```
 
-4. Update the pre-commit file in the git hook folder of the repository. If the file does not exist, we should just create it.
+5. Update the config.ini file to add the settings of your sonarqube server, repository and projects;
+6. Update the commit_analyzer.py file to set config.ini path;
+7. Update the pre-commit file in the git hook folder of the repository. If the file does not exist, we should just create it.
 ```
 {Repository}\.git\hooks\pre-commit
 ```
@@ -54,6 +60,3 @@ The file should contain the following command:
 #!/bin/sh
 python "{BaseFolder}\SonarCommitAnalyzer\main.py"
 ```
-
-# Using
-After adding the file at the stage and before the commit, the script executes SonarQube. If there is a problem, the error report opens automatically in the browser. The commit is only accepted if there are no problems encountered.
