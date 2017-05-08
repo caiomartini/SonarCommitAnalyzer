@@ -6,7 +6,7 @@ Code analysis with SonarQube in pre-commit.
 - Python 3.6.1
 - SonarQube
 
-### Python libraries pre requirements
+### Python libraries
 - [GitPython](https://gitpython.readthedocs.io/en/stable/index.html)
 
 # Setting up
@@ -25,10 +25,9 @@ C:\
     └ template\
         └ template.sonarsource.properties
 ```
-## Attention
-**_Download [sonar-scanner](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner)_**
+_Download sonar-scanner [here](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner)_
 
-**_template.sonarsource.properties file should contain the following content:_**
+_The template.sonarsource.properties file should contain the following content:_
 ```
 sonar.host.url={url}
 sonar.projectBaseDir={repository}
@@ -55,7 +54,7 @@ sonar.issuesReport.console.enable=true
 {Repository}\.git\hooks\pre-commit
 ```
 
-The file should contain the following command:
+_The file should contain the following content:_
 ```
 #!/bin/sh
 python "{BaseFolder}\SonarCommitAnalyzer\main.py"
