@@ -105,6 +105,10 @@ class CommitAnalyzer(object):
 
             output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
 
+            if "EXECUTION FAILURE" in output.stdout:
+                utils.print_("ERRO: Não foi possível executar o SonarQube no sistema {}".format(system.upper()))
+                sys.exit(0)
+
             if "major" in output.stdout or "critical" in output.stdout:
                 webbrowser.open(self.sonar_folder + "/issues_report/{}/issues-report-{}.html".format(system, system), new=2)
                 utils.print_("   Relatório de problemas do sistema {} disponibilizado.".format(system.upper()))
@@ -113,6 +117,7 @@ class CommitAnalyzer(object):
                 utils.print_("   OK")
         except Exception:
             utils.print_("ERRO: Não foi possível executar o SonarQube no sistema {}".format(system.upper()))
+            sys.exit(0)
 
         self.remove_configuration_file(system)
 
