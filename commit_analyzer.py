@@ -10,7 +10,7 @@ class CommitAnalyzer(object):
     """ Class to analyze commit. """
 
     def __init__(self):
-        config = config_tool.ConfigTool("C:/Users/Caio/Desktop/SonarCommitAnalyzer/config.ini")
+        config = config_tool.ConfigTool("{SonarCommitAnalyzerRepository}/SonarCommitAnalyzer/config.ini")
 
         sonarconfigs = config.configsectionmap("Sonar")
         self.sonar_scanner = sonarconfigs["scanner"]

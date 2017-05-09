@@ -52,6 +52,9 @@ sonar.issuesReport.console.enable=true
 
 5. Update the config.ini file to add the settings of your sonarqube server, repository, systems and on/off scan;
 6. Update the commit_analyzer.py file to set config.ini path;
+```
+config = config_tool.ConfigTool("{SonarCommitAnalyzerRepository}/SonarCommitAnalyzer/config.ini")
+```
 7. Update the pre-commit file in the git hook folder of the repository. If the file does not exist, we should just create it.
 ```
 {ProjectRepository}\.git\hooks\pre-commit
