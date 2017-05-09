@@ -26,7 +26,7 @@ class CommitAnalyzer(object):
         self.keyconfig = config.configsectionmap("SystemKey")
 
         scanstatus = config.configsectionmap("Status")
-        self.scan_status = scanstatus["on"]
+        self.scan_status = scanstatus["on"].lower() == "true"
 
         self.files = []
         self.systems = []
@@ -77,17 +77,18 @@ class CommitAnalyzer(object):
 
             self.systems = {file["System"] for file in self.files}
 
-            for system in self.systems:
+            for system in sorted(self.systems):
                 index = list(self.systems).index(system)+1
                 utils.print_("   {}. {}".format(index, system.upper()))
                 files = {file["File"] for file in self.files if file["System"] == system}
-                for file in files:
+                for file in sorted(files):
                     if list(files).index(file) == len(files)-1:
                         utils.print_(u"       \u2514 " + file)
                     else:
                         utils.print_(u"       \u251c " + file)
         except Exception:
-            utils.print_("ERRO: Não foi possível encontrar os arquivos modificados no stage.")
+            utils.print_("   ERRO: Não foi possível encontrar os arquivos modificados no stage.")
+            sys.exit(0)
 
     def remove_configuration_file(self, system):
         """ Function to remove sonar configuration file. """
@@ -96,9 +97,10 @@ class CommitAnalyzer(object):
 
         try:
             utils.remove_file(self.sonar_folder + "/{}.sonarsource.properties".format(system))
-            utils.print_("   OK")
+            utils.print_("   OK: Arquivo de configuração do sistema {} removido.".format(system.upper()))
         except Exception:
             utils.print_("ERRO: Não foi possível remover o arquivo de configuração do sistema {}".format(system.upper()))
+            sys.exit(0)
 
     def run_sonar(self, system):
         """ Function to run sonar-scanner. """
@@ -116,10 +118,10 @@ class CommitAnalyzer(object):
 
             if "major" in output.stdout or "critical" in output.stdout:
                 webbrowser.open(self.sonar_folder + "/issues_report/{}/issues-report-{}.html".format(system, system), new=2)
-                utils.print_("   Relatório de problemas do sistema {} disponibilizado.".format(system.upper()))
+                utils.print_("   Relatório de problemas do sistema {} disponibilizado no navegador.".format(system.upper()))
                 self.scanner_error = True
             else:
-                utils.print_("   OK")
+                utils.print_("   OK: Não foi encontrado nenhum problema no sistema {}".format(system.upper()))
         except Exception:
             utils.print_("ERRO: Não foi possível executar o SonarQube no sistema {}".format(system.upper()))
             sys.exit(0)
@@ -155,7 +157,7 @@ class CommitAnalyzer(object):
             for line in lines:
                 outfile.write(line)
 
-        utils.print_("   OK")
+        utils.print_("   OK: Arquivo de configuração do sistema {} criado com sucesso.".format(system.upper()))
 
     def commit_analyzer(self):
         """ Main function to analyze commit. """
