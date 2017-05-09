@@ -165,9 +165,9 @@ class CommitAnalyzer(object):
 
         self.find_modified_files()
 
-        utils.verify_sonar_response(self.sonar_server)
-
         if self.scan_status:
+            utils.verify_sonar_response(self.sonar_server)
+
             for system in self.systems:
                 self.preparing_sonar(system)
                 self.run_sonar(system)
