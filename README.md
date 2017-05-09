@@ -30,6 +30,9 @@ _*Download sonar-scanner [here](https://docs.sonarqube.org/display/SCAN/Analyzin
 _*The template.sonarsource.properties file should contain the following content:_
 ```
 sonar.host.url={url}
+sonar.login={login}
+sonar.password={password}
+
 sonar.projectBaseDir={repository}
 sonar.projectKey={key}
 sonar.projectName={sistema}
@@ -47,7 +50,7 @@ sonar.issuesReport.html.name=issues-report-{sistema}
 sonar.issuesReport.console.enable=true
 ```
 
-5. Update the config.ini file to add the settings of your sonarqube server, repository and projects;
+5. Update the config.ini file to add the settings of your sonarqube server, repository, systems and on/off scan;
 6. Update the commit_analyzer.py file to set config.ini path;
 7. Update the pre-commit file in the git hook folder of the repository. If the file does not exist, we should just create it.
 ```
