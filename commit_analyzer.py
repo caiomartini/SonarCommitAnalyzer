@@ -26,7 +26,7 @@ class CommitAnalyzer(object):
         self.keyconfig = config.configsectionmap("SystemKey")
 
         scanstatus = config.configsectionmap("Status")
-        self.scan_status = scanstatus["Status"]
+        self.scan_status = scanstatus["on"]
 
         self.files = []
         self.systems = []
