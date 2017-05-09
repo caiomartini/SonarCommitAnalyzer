@@ -15,6 +15,8 @@ class CommitAnalyzer(object):
         sonarconfigs = config.configsectionmap("Sonar")
         self.sonar_scanner = sonarconfigs["scanner"]
         self.sonar_server = sonarconfigs["url"]
+        self.sonar_login = sonarconfigs["login"]
+        self.sonar_password = sonarconfigs["password"]
         self.sonar_folder = sonarconfigs["basefolder"]
         self.template = sonarconfigs["template"]
 
@@ -22,6 +24,9 @@ class CommitAnalyzer(object):
         self.base_repository = repositoryconfig["repository"]
 
         self.keyconfig = config.configsectionmap("SystemKey")
+
+        scanstatus = config.configsectionmap("Status")
+        self.scan_status = scanstatus["Status"]
 
         self.files = []
         self.systems = []
@@ -130,6 +135,8 @@ class CommitAnalyzer(object):
 
         replacements = {
             "{url}": self.sonar_server,
+            "{login}": self.sonar_login,
+            "{password}": self.sonar_password,
             "{repository}": self.base_repository,
             "{key}": self.keyconfig[system.lower()],
             "{sistema}": system,
@@ -160,17 +167,20 @@ class CommitAnalyzer(object):
 
         utils.verify_sonar_response(self.sonar_server)
 
-        for system in self.systems:
-            self.preparing_sonar(system)
-            self.run_sonar(system)
+        if self.scan_status:
+            for system in self.systems:
+                self.preparing_sonar(system)
+                self.run_sonar(system)
 
-        utils.remove_folder("{}/.scannerwork".format(self.base_repository))
+            utils.remove_folder("{}/.scannerwork".format(self.base_repository))
 
-        utils.print_(">> Análise de qualidade de código pelo SonarQube finalizada.")
+            utils.print_(">> Análise de qualidade de código pelo SonarQube finalizada.")
 
-        if self.scanner_error:
-            utils.print_("   Foram encontrados problemas críticos de qualidade.")
-            utils.print_("   Verifique o relatório aberto no navegador e faça as correções antes de efetuar o commit.")
-            sys.exit(1)
-        
-        utils.print_("   Nenhum problema foi encontrado. Commit liberado.")
+            if self.scanner_error:
+                utils.print_("   Foram encontrados problemas críticos de qualidade.")
+                utils.print_("   Verifique o relatório aberto no navegador e faça as correções antes de efetuar o commit.")
+                sys.exit(1)
+
+            utils.print_("   Nenhum problema foi encontrado. Commit liberado.")
+        else:
+            utils.print_(">> Análise de qualidade de código pelo SonarQube desativada.")
