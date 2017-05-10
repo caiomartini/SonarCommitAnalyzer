@@ -33,6 +33,8 @@ if not os.path.isfile(file):
                 "sonar.issuesReport.html.name=issues-report-{sistema}\n"\
                 "sonar.issuesReport.console.enable=true")
 
+print("OK > Directories created.")
+
 print(">> Instal GitPython ...")
 
 output = subprocess.run("pip install GitPython", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
