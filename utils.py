@@ -21,7 +21,7 @@ def verify_sonar_response(url):
         response = sonarhttp.getresponse()
         print_("OK > SonarQube está em execução.")
     except Exception:
-        print_("ERROR > SonarQube não está em execução, a análise do código nao irá acontecer.")
+        print_("ERROR > SonarQube não está em execução. Análise abortada.")
         sys.exit(0)
 
 def remove_file(file):
