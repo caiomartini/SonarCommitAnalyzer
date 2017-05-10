@@ -45,7 +45,7 @@ sonar.analysis.mode=preview
 sonar.exclusions=**/*.js
 
 sonar.issuesReport.html.enable=true
-sonar.issuesReport.html.location=C:/Sonar/issues_report/{sistema}/
+sonar.issuesReport.html.location=C:/Sonar/issues-report/{sistema}/
 sonar.issuesReport.html.name=issues-report-{sistema}
 sonar.issuesReport.console.enable=true
 ```
