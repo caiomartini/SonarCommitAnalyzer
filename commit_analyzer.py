@@ -76,12 +76,14 @@ class CommitAnalyzer(object):
             utils.print_("   Arquivos alterados:")
 
             self.systems = {file["System"] for file in self.files}
+            self.systems = sorted(self.systems)
 
-            for system in sorted(self.systems):
+            for system in self.systems:
                 index = list(self.systems).index(system)+1
                 utils.print_("   {}. {}".format(index, system))
                 files = {file["File"] for file in self.files if file["System"] == system}
-                for file in sorted(files):
+                files = sorted(files)
+                for file in files:
                     utils.print_("       - " + file)
                     # To show characters ├ and └
                     #if list(files).index(file) == len(files)-1:
