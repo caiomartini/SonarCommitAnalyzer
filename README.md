@@ -10,8 +10,8 @@ Code analysis with SonarQube in pre-commit.
 - [GitPython](https://gitpython.readthedocs.io/en/stable/index.html)
 
 # Setting up
-1. Clone this repository;
-2. Install Python 3.6.1;
+1. Install Python 3.6.1;
+2. Clone this repository;
 3. Execute `python first_run.py` in cmd prompt;
 4. Download sonar-scanner [here](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner), rename to `sonar-scanner` and move it to the previously created `Sonar` folder.
 ```
