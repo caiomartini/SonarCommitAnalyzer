@@ -25,7 +25,7 @@ C:\Sonar\
 ```
 config = config_tool.ConfigTool("{replace}/SonarCommitAnalyzer/config.ini")
 ```
-7. Update or create `{replace}\.git\hooks\pre-commit` in the git hook folder of the repository. The file should contain the following content:
+7. Update or create `{your_repository}\.git\hooks\pre-commit` in the git hook folder of the repository. The file should contain the following content:
 ```
 #!/bin/sh
 python "{replace}\SonarCommitAnalyzer\main.py"
