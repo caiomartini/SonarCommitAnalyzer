@@ -97,7 +97,7 @@ class CommitAnalyzer(object):
     def remove_configuration_file(self, system):
         """ Function to remove sonar configuration file. """
 
-        utils.print_(">> Removendo arquivo de configuração do sistema {} ...".format(system))
+        utils.print_(">> Removendo arquivo de configuração ...")
 
         try:
             utils.remove_file(self.sonar_folder + "/{}.sonarsource.properties".format(system))
@@ -121,8 +121,8 @@ class CommitAnalyzer(object):
                 sys.exit(0)
 
             if "major" in output.stdout or "critical" in output.stdout:
-                webbrowser.open(self.sonar_folder + "/issues_report/{}/issues-report-{}.html".format(system, system), new=2)
-                utils.print_("   Relatório de problemas do sistema {} disponibilizado no navegador.".format(system))
+                webbrowser.open(self.sonar_folder + "/issues-report/{}/issues-report-{}.html".format(system, system), new=2)
+                utils.print_("OK > Relatório disponibilizado no navegador.")
                 self.scanner_error = True
             else:
                 utils.print_("OK > Não foi encontrado nenhum problema no sistema {}".format(system))
@@ -183,10 +183,10 @@ class CommitAnalyzer(object):
             utils.print_(">> Análise de qualidade de código pelo SonarQube finalizada.")
 
             if self.scanner_error:
-                utils.print_("   Foram encontrados problemas críticos de qualidade.")
-                utils.print_("   Verifique o relatório aberto no navegador e faça as correções antes de efetuar o commit.")
+                utils.print_("WARN > Foram encontrados problemas críticos de qualidade, verifique o relatório no navegador.")
+                utils.print_("WARN > Commit recusado.")
                 sys.exit(1)
 
-            utils.print_("   Nenhum problema foi encontrado. Commit liberado.")
+            utils.print_("OK > Nenhum problema foi encontrado. Commit liberado.")
         else:
             utils.print_(">> Análise de qualidade de código pelo SonarQube desativada.")
