@@ -10,29 +10,31 @@ class CommitAnalyzer(object):
     """ Class to analyze commit. """
 
     def __init__(self):
-        config = config_tool.ConfigTool("{replace}/SonarCommitAnalyzer/config.ini")
+        config = config_tool.ConfigTool("./config.ini")
 
         sonarconfigs = config.configsectionmap("Sonar")
         self.sonar_scanner = sonarconfigs["scanner"]
         self.sonar_server = sonarconfigs["url"]
         self.sonar_login = sonarconfigs["login"]
         self.sonar_password = sonarconfigs["password"]
-        self.sonar_folder = sonarconfigs["basefolder"]
-        self.template = sonarconfigs["template"]
+        self.sonar_folder = sonarconfigs["folder"]
+        self.sonar_template = sonarconfigs["template"]
 
         repositoryconfig = config.configsectionmap("Repository")
         self.base_repository = repositoryconfig["repository"]
-
-        self.keyconfig = config.configsectionmap("SystemKey")
+        self.base_ci = repositoryconfig["ci"]
 
         scanstatus = config.configsectionmap("Status")
         self.scan_status = scanstatus["on"].lower() == "true"
+
+        # Created for Mitsui
+        self.systems_and_keys = utils.find_systems_and_keys(self.base_ci)
 
         self.files = []
         self.systems = []
         self.scanner_error = False
 
-    def find_systems(self, file):
+    def find_modified_systems(self, file):
         """ Function to find systems. """
 
         try:
@@ -40,7 +42,7 @@ class CommitAnalyzer(object):
 
             file_folders = file.split("/")
 
-            folder = self.base_repository + "/" + file.replace("/" + file_folders[len(file_folders)-1], "")
+            folder = self.base_repository + file.replace("/" + file_folders[len(file_folders)-1], "")
 
             for i in range(len(file_folders)-1, 0, -1):
                 folder = folder.replace("/" + file_folders[i], "")
@@ -70,7 +72,7 @@ class CommitAnalyzer(object):
 
             for file in modified_files:
                 if file.change_type != "D":
-                    dictionary = self.find_systems(file)
+                    dictionary = self.find_modified_systems(file)
                     self.files.append(dictionary)
 
             utils.print_("Arquivos alterados:")
@@ -100,7 +102,7 @@ class CommitAnalyzer(object):
         utils.print_(">> Removendo arquivo de configuração ...")
 
         try:
-            utils.remove_file(self.sonar_folder + "/{}.sonarsource.properties".format(system))
+            utils.remove_file(self.sonar_folder + "{}.sonarsource.properties".format(system))
             utils.print_("OK > Arquivo de configuração {}.sonarsource.properties removido com sucesso.".format(system))
         except Exception:
             utils.print_("ERRO > Não foi possível remover o arquivo de configuração do sistema {}".format(system))
@@ -112,7 +114,7 @@ class CommitAnalyzer(object):
         utils.print_(">> Executando SonarQube no sistema {} ...".format(system))
 
         try:
-            command = self.sonar_scanner + " -D project.settings={}/{}.sonarsource.properties".format(self.sonar_folder, system)
+            command = self.sonar_scanner + " -D project.settings={}{}.sonarsource.properties".format(self.sonar_folder, system)
 
             output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
 
@@ -121,7 +123,7 @@ class CommitAnalyzer(object):
                 sys.exit(0)
 
             if "major" in output.stdout or "critical" in output.stdout:
-                webbrowser.open(self.sonar_folder + "/issues-report/{}/issues-report-{}.html".format(system, system), new=2)
+                webbrowser.open(self.sonar_folder + "issues-report/{}/issues-report-{}.html".format(system, system), new=2)
                 utils.print_("OK > Relatório disponibilizado no navegador.")
                 self.scanner_error = True
             else:
@@ -137,27 +139,27 @@ class CommitAnalyzer(object):
 
         utils.print_(">> Preparando execução do SonarQube no sistema {} ...".format(system))
 
-        files = {file["File"] for file in self.files if file["System"] == system}
-
         replacements = {
             "{url}": self.sonar_server,
             "{login}": self.sonar_login,
             "{password}": self.sonar_password,
             "{repository}": self.base_repository,
-            "{key}": self.keyconfig[system.lower()],
-            "{sistema}": system,
-            "{path}": ",".join(files)
+            "{key}": list({item["Key"] for item in self.systems_and_keys if item["System"] == system})[0],
+            "{system}": system,
+            "{version}": list({item["Version"] for item in self.systems_and_keys if item["System"] == system})[0],
+            "{path}": ",".join({file["File"] for file in self.files if file["System"] == system}),
+            "{language}": list({item["Language"] for item in self.systems_and_keys if item["System"] == system})[0]
         }
 
         lines = []
 
-        with open(self.template) as infile:
+        with open(self.sonar_template) as infile:
             for line in infile:
                 for src, target in replacements.items():
                     line = line.replace(src, target)
                 lines.append(line)
 
-        with open(self.sonar_folder + "/{}.sonarsource.properties".format(system), 'w') as outfile:
+        with open(self.sonar_folder + "{}.sonarsource.properties".format(system), 'w') as outfile:
             for line in lines:
                 outfile.write(line)
 
@@ -178,7 +180,7 @@ class CommitAnalyzer(object):
                 self.preparing_sonar(system)
                 self.run_sonar(system)
 
-            utils.remove_folder("{}/.scannerwork".format(self.base_repository))
+            utils.remove_folder("{}.scannerwork".format(self.base_repository))
 
             utils.print_(">> Análise de qualidade de código pelo SonarQube finalizada.")
 
