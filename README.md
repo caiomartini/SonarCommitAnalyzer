@@ -17,7 +17,7 @@ Code analysis with SonarQube in pre-commit.
 ```
 C:\Sonar\
 ├ issues-report\
-├ sonar-scanner\
+└ sonar-scanner\
 ```
 5. Update the `config.ini` to add the settings of your sonarqube server, repository, systems and on/off scan;
 6. Update or create pre-commit file in the git hook folder of the repository `{your_repository}\.git\hooks\pre-commit`. The file should contain the following content:
