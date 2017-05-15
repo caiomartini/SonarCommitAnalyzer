@@ -13,7 +13,7 @@ Code analysis with SonarQube in pre-commit.
 1. Install Python 3.6.1;
 2. Clone this repository;
 3. Execute `python first_run.py` in cmd prompt;
-4. Download sonar-scanner [here](https://docs.sonarqube.org/display/SCAN/Analyzing+with+SonarQube+Scanner), rename to `sonar-scanner` and move it to the previously created `Sonar` folder.
+4. Verify that the directory has been created:
 ```
 C:\Sonar\
 ├ issues-report\

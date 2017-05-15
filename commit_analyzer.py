@@ -27,31 +27,39 @@ class CommitAnalyzer(object):
         scanstatus = config.configsectionmap("Status")
         self.scan_status = scanstatus["on"].lower() == "true"
 
-        # Created for Mitsui
         self.systems_and_keys = utils.find_systems_and_keys(self.base_ci)
 
         self.files = []
         self.systems = []
         self.scanner_error = False
 
-    def find_modified_systems(self, file):
-        """ Function to find systems. """
+    def find_modifed_systems_in_file_folders(self, file):
+        """ Function to find systems in file folders """
 
         try:
             file = file.a_path
-
             file_folders = file.split("/")
-
             folder = self.base_repository + file.replace("/" + file_folders[len(file_folders)-1], "")
 
             for i in range(len(file_folders)-1, 0, -1):
                 folder = folder.replace("/" + file_folders[i], "")
-
                 for _, _, files in os.walk(folder):
                     for file_system in files:
                         if file_system.endswith(".sln"):
                             file_dictionary = {"System": file_system.replace(".sln", ""), "File": file}
                             return file_dictionary
+        except Exception:
+            utils.print_("ERRO > Não foi possível encontrar os sistemas a partir dos arquivos modificados.")
+            sys.exit(0)
+
+    def find_modified_systems(self, file):
+        """ Function to find systems. """
+
+        try:
+            file = file.a_path
+            system = list({system["System"] for system in self.systems_and_keys if system["Solution_Path"] in file})[0]
+            file_dictionary = {"System": system, "File": file}
+            return file_dictionary
         except Exception:
             utils.print_("ERRO > Não foi possível encontrar os sistemas a partir dos arquivos modificados.")
             sys.exit(0)
@@ -71,11 +79,16 @@ class CommitAnalyzer(object):
                 sys.exit(0)
 
             for file in modified_files:
-                if file.change_type != "D":
+                _, file_extension = os.path.splitext(file.a_path)
+                if file.change_type != "D" and file_extension == ".cs":
                     dictionary = self.find_modified_systems(file)
                     self.files.append(dictionary)
 
-            utils.print_("Arquivos alterados:")
+            if len(self.files) == 0:
+                utils.print_("OK > Nenhum arquivo C# foi alterado.")
+                sys.exit(0)
+
+            utils.print_("Arquivos C# alterados:")
 
             self.systems = {file["System"] for file in self.files}
             self.systems = sorted(self.systems)
