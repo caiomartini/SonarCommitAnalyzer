@@ -48,7 +48,7 @@ class CommitAnalyzer(object):
         """ Function to find systems. """
         try:
             file = file.a_path
-            system = list({system["System"] for system in self.systems_and_keys if system["Solution_Path"] in file})[0]
+            system = list({system["System"] for system in self.systems_and_keys if system["Solution_Path"].replace("\\", "/") in file})[0]
             file_dictionary = {"System": system, "File": file}
             return file_dictionary
         except Exception:
