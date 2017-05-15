@@ -27,6 +27,29 @@ if os.path.exists("C:/Sonar/sonar-scanner-3.0.3.778-windows"):
 directory = "C:/Sonar/issues-report"
 os.makedirs(directory, exist_ok=True)
 
+file = "C:/Sonar/template/template.sonarsource.properties"
+os.makedirs(os.path.dirname(file), exist_ok=True)
+if not os.path.isfile(file):
+    with open(file, "w") as f:
+        f.writelines("sonar.host.url={url}\n"\
+                "sonar.login={login}\n"\
+                "sonar.password={password}\n"\
+                "\n"\
+                "sonar.projectBaseDir={repository}\n"\
+                "sonar.projectKey={key}\n"\
+                "sonar.projectName={system}\n"\
+                "sonar.projectVersion={version}\n"\
+                "\n"\
+                "sonar.sources={path}\n"\
+                "sonar.language={language}"\
+                "\n"\
+                "sonar.analysis.mode=preview\n"\
+                "\n"\
+                "sonar.issuesReport.html.enable=true\n"\
+                "sonar.issuesReport.html.location=C:/Sonar/issues-report/{system}/\n"\
+                "sonar.issuesReport.html.name=issues-report-{system}\n"\
+                "sonar.issuesReport.console.enable=true")
+
 print("OK > Directories created.")
 
 print(">> Instal GitPython ...")

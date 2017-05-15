@@ -18,7 +18,7 @@ def verify_sonar_response(url):
         response = sonarhttp.getresponse()
         print_("OK > SonarQube está em execução.")
     except Exception:
-        print_("ERROR > SonarQube não está em execução. Análise abortada.")
+        print_("ERROR > SonarQube não está em execução. Commit liberado.")
         sys.exit(0)
 
 def remove_file(file):
@@ -32,7 +32,7 @@ def remove_folder(folder):
         shutil.rmtree(folder)
 
 def find_systems_and_keys(repository):
-    """ Function created for Mitsui. Function find systems and keys in ps1 file. """
+    """ Created for Mitsui. Function find systems and keys in ps1 file. """
     file = repository + "Configuracoes.ps1"
     replacements = {
         "),\n": "",
