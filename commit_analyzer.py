@@ -49,8 +49,8 @@ class CommitAnalyzer(object):
                             return file_dictionary
 
         except Exception:
-            utils.print_("ERRO > Não foi possível encontrar os sistemas a partir dos arquivos modificados.")
-            sys.exit(0)
+            utils.error_text("Não foi possível encontrar os sistemas a partir dos arquivos modificados.")
+            utils.system_exit_ok()
 
     def find_modified_systems(self, file):
         """ Function to find systems. """
@@ -61,8 +61,8 @@ class CommitAnalyzer(object):
             return file_dictionary
 
         except Exception:
-            utils.print_("ERRO > Não foi possível encontrar os sistemas a partir dos arquivos modificados.")
-            sys.exit(0)
+            utils.error_text("Não foi possível encontrar os sistemas a partir dos arquivos modificados.")
+            utils.system_exit_ok()
 
     def find_modified_files(self):
         """ Function to find modified files. """
@@ -72,18 +72,18 @@ class CommitAnalyzer(object):
             modified_files = self.git_repository.head.commit.diff()
 
             if not modified_files:
-                utils.print_("OK > Nenhum arquivo foi alterado.")
-                sys.exit(0)            
+                utils.ok_text("Nenhum arquivo foi alterado.")
+                utils.system_exit_ok()            
 
             for file in modified_files:
                 _, file_extension = os.path.splitext(file.a_path)
-                if file.change_type != "D" and file_extension == ".cs":
+                if file.change_type != "D" and file_extension.lower() == ".cs":
                     dictionary = self.find_modified_systems(file)
                     self.files.append(dictionary)            
 
             if len(self.files) == 0:
-                utils.print_("OK > Nenhum arquivo C# foi alterado.")
-                sys.exit(0)
+                utils.ok_text("Nenhum arquivo C# foi alterado.")
+                utils.system_exit_ok()
 
             utils.print_("Arquivos C# alterados:")
             self.systems = {file["System"] for file in self.files}
@@ -96,15 +96,15 @@ class CommitAnalyzer(object):
                 files = sorted(files)
                 for file in files:
                     utils.print_(" - " + file)
-                    # To show characters ├ and └
+                    # To show characters ├ and └ (pearl not working)
                     #if list(files).index(file) == len(files)-1:
                     #    utils.print_(u"       \u2514 " + file)
                     #else:
                     #    utils.print_(u"       \u251c " + file)
 
         except Exception:
-            utils.print_("ERRO > Não foi possível encontrar os arquivos modificados no stage.")
-            sys.exit(0)
+            utils.error_text("Não foi possível encontrar os arquivos modificados no stage.")
+            utils.system_exit_ok()
 
     def remove_configuration_file(self, system):
         """ Function to remove sonar configuration file. """
@@ -112,11 +112,11 @@ class CommitAnalyzer(object):
 
         try:
             utils.remove_file(self.sonar_folder + "{}.sonarsource.properties".format(system))
-            utils.print_("OK > Arquivo de configuração {}.sonarsource.properties removido com sucesso.".format(system))
+            utils.ok_text("Arquivo {}.sonarsource.properties removido com sucesso.".format(system))
 
         except Exception:
-            utils.print_("ERRO > Não foi possível remover o arquivo de configuração do sistema {}".format(system))
-            sys.exit(0)
+            utils.error_text("Não foi possível remover o arquivo de configuração do sistema {}".format(system))
+            utils.system_exit_ok()
 
     def run_sonar(self, system):
         """ Function to run sonar-scanner. """
@@ -127,19 +127,17 @@ class CommitAnalyzer(object):
             output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
 
             if "EXECUTION FAILURE" in output.stdout:
-                utils.print_("ERRO > Não foi possível executar o SonarQube no sistema {}".format(system))
-                sys.exit(0)
+                utils.error_text("Não foi possível executar o SonarQube no sistema {}".format(system))
+                utils.system_exit_ok()
 
             if "major" in output.stdout or "critical" in output.stdout:
                 webbrowser.open(self.sonar_folder + "issues-report/{}/issues-report-{}.html".format(system, system), new=2)
-                utils.print_("OK > Relatório disponibilizado no navegador.")
+                utils.ok_text("Relatório disponibilizado no navegador.")
                 self.scanner_error = True
-            else:
-                utils.print_("OK > Não foi encontrado nenhum problema no sistema {}".format(system))
 
         except Exception:
-            utils.print_("ERRO > Não foi possível executar o SonarQube no sistema {}".format(system))
-            sys.exit(0)
+            utils.error_text("Não foi possível executar o SonarQube no sistema {}".format(system))
+            utils.system_exit_ok()
 
         self.remove_configuration_file(system)
 
@@ -170,14 +168,18 @@ class CommitAnalyzer(object):
             for line in lines:
                 outfile.write(line)
 
-        utils.print_("OK > Arquivo de configuração {}.sonarsource.properties criado com sucesso.".format(system))
+        utils.ok_text("Arquivo {}.sonarsource.properties criado com sucesso.".format(system))
 
     def commit_analyzer(self):
         """ Main function to analyze commit. """
-        utils.print_("\n")
-        utils.print_(">> Processo de análise de código pelo SonarQube iniciado.")
 
+        utils.print_("\n")
         utils.verify_branch_merging(self.git_command)
+
+        utils.print_("-------------------------------------------------------")
+        utils.print_(">>     ANÁLISE DE CÓDIGO PELO SONARQUBE INICIADO     <<")
+        utils.print_("-------------------------------------------------------\n")
+
         self.find_modified_files()
 
         if self.scan_status:
@@ -191,12 +193,11 @@ class CommitAnalyzer(object):
             utils.print_(">> Análise de qualidade de código pelo SonarQube finalizada.")
 
             if self.scanner_error:
-                utils.print_("WARN > Foram encontrados problemas críticos de qualidade, verifique o relatório no navegador.")
-                utils.print_("WARN > Commit recusado.")
-                sys.exit(1)
-
-            utils.print_("OK > Nenhum problema foi encontrado. Commit liberado.")
+                utils.warning_text("Existem problemas críticos de qualidade, verifique o relatório no navegador. Commit recusado.")
+                utils.system_exit_block_commit()
+            else:
+                utils.ok_text("Nenhum problema foi encontrado. Commit liberado.")
+                utils.system_exit_ok()
         else:
             utils.print_(">> Análise de qualidade de código pelo SonarQube desativada.")
-
-        utils.print_("\n")
+            utils.system_exit_ok()
