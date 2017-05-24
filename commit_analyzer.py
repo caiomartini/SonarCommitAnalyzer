@@ -66,13 +66,13 @@ class CommitAnalyzer(object):
 
     def find_modified_files(self):
         """ Function to find modified files. """
-        utils.print_(">> Analisando arquivos no stage ...")        
+        utils.print_(">> Analisando arquivos C# no stage ...")        
 
         try:
             modified_files = self.git_repository.head.commit.diff()
 
             if not modified_files:
-                utils.ok_text("Nenhum arquivo foi alterado.")
+                utils.ok_text("Nenhum arquivo alterado.")
                 utils.system_exit_ok()            
 
             for file in modified_files:
@@ -82,10 +82,10 @@ class CommitAnalyzer(object):
                     self.files.append(dictionary)            
 
             if len(self.files) == 0:
-                utils.ok_text("Nenhum arquivo C# foi alterado.")
+                utils.ok_text("Nenhum arquivo alterado.")
                 utils.system_exit_ok()
 
-            utils.print_("Arquivos C# alterados:")
+            utils.print_("Arquivos alterados:")
             self.systems = {file["System"] for file in self.files}
             self.systems = sorted(self.systems)            
 
@@ -101,6 +101,7 @@ class CommitAnalyzer(object):
                     #    utils.print_(u"       \u2514 " + file)
                     #else:
                     #    utils.print_(u"       \u251c " + file)
+            utils.print_("")
 
         except Exception:
             utils.error_text("Não foi possível encontrar os arquivos modificados no stage.")
@@ -134,6 +135,8 @@ class CommitAnalyzer(object):
                 webbrowser.open(self.sonar_folder + "issues-report/{}/issues-report-{}.html".format(system, system), new=2)
                 utils.ok_text("Relatório disponibilizado no navegador.")
                 self.scanner_error = True
+            else:
+                utils.ok_text("Análise concluída.")
 
         except Exception:
             utils.error_text("Não foi possível executar o SonarQube no sistema {}".format(system))
@@ -173,16 +176,15 @@ class CommitAnalyzer(object):
     def commit_analyzer(self):
         """ Main function to analyze commit. """
 
-        utils.print_("\n")
         utils.verify_branch_merging(self.git_command)
 
-        utils.print_("-------------------------------------------------------")
-        utils.print_(">>     ANÁLISE DE CÓDIGO PELO SONARQUBE INICIADO     <<")
-        utils.print_("-------------------------------------------------------\n")
-
-        self.find_modified_files()
-
         if self.scan_status:
+            utils.print_("\n|--                                         --|")
+            utils.print_("|  ANÁLISE DE CÓDIGO PELO SONARQUBE INICIADO  |")
+            utils.print_("|--                                         --|\n")
+
+            self.find_modified_files()
+
             utils.verify_sonar_response(self.sonar_server)
 
             for system in self.systems:
@@ -196,8 +198,8 @@ class CommitAnalyzer(object):
                 utils.warning_text("Existem problemas críticos de qualidade, verifique o relatório no navegador. Commit recusado.")
                 utils.system_exit_block_commit()
             else:
-                utils.ok_text("Nenhum problema foi encontrado. Commit liberado.")
+                utils.ok_text("Nenhum problema encontrado. Commit liberado.")
                 utils.system_exit_ok()
         else:
-            utils.print_(">> Análise de qualidade de código pelo SonarQube desativada.")
+            utils.warning_text(">> Análise de qualidade de código pelo SonarQube está desativada.")
             utils.system_exit_ok()

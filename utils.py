@@ -38,7 +38,7 @@ def verify_branch_merging(git_command):
     branch_merging = git_command.execute("git status")
 
     if "All conflicts fixed but you are still merging." in branch_merging:
-        print_(">> Commit de MERGE. SonarQube não será executado.")
+        ok_text(">> Commit de MERGE. SonarQube não será executado.")
         system_exit_ok()
 
 def find_systems_and_keys(repository):
