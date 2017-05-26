@@ -96,7 +96,7 @@ class CommitAnalyzer(object):
                 files = sorted(files)
                 for file in files:
                     utils.print_(" - " + file)
-                    # To show characters ├ and └ (pearl not working)
+                    # To show characters ├ and └ (not working in pearl)
                     #if list(files).index(file) == len(files)-1:
                     #    utils.print_(u"       \u2514 " + file)
                     #else:
@@ -148,7 +148,6 @@ class CommitAnalyzer(object):
         """ Function to preparing sonar-scanner execution. """
         utils.print_(">> Preparando execução do SonarQube no sistema {} ...".format(system))        
 
-        lines = []
         replacements = {
             "{url}": self.sonar_server,
             "{login}": self.sonar_login,
@@ -157,10 +156,13 @@ class CommitAnalyzer(object):
             "{key}": list({item["Key"] for item in self.systems_and_keys if item["System"] == system})[0],
             "{system}": system,
             "{version}": list({item["Version"] for item in self.systems_and_keys if item["System"] == system})[0],
-            "{path}": ",".join({file["File"] for file in self.files if file["System"] == system}),
-            "{language}": list({item["Language"] for item in self.systems_and_keys if item["System"] == system})[0]
+            "{sources}": ",".join({file["File"] for file in self.files if file["System"] == system}),
+            "{files}": ",".join({file["File"] for file in self.files if file["System"] == system}),
+            "{language}": list({item["Language"] for item in self.systems_and_keys if item["System"] == system})[0],
+            "{branch}": self.git_repository.active_branch.name
         }
-
+        
+        lines = []
         with open(self.sonar_template) as infile:
             for line in infile:
                 for src, target in replacements.items():
@@ -179,9 +181,9 @@ class CommitAnalyzer(object):
         utils.verify_branch_merging(self.git_command)
 
         if self.scan_status:
-            utils.print_("\n|--                                         --|")
-            utils.print_("|  ANÁLISE DE CÓDIGO PELO SONARQUBE INICIADO  |")
-            utils.print_("|--                                         --|\n")
+            utils.print_("\n>-------------------------------------------<")
+            utils.print_("> ANÁLISE DE CÓDIGO PELO SONARQUBE INICIADO <")
+            utils.print_(">-------------------------------------------<\n")
 
             self.find_modified_files()
 

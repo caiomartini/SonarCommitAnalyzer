@@ -93,7 +93,7 @@ def system_exit_ok():
     sys.exit(0)
 
 def warning_text(text):
-    print_("\033[93mWARN - {}\033[0m\n".format(text));
+    print_("\033[93mWARNING - {}\033[0m\n".format(text));
 
 def ok_text(text):
     print_("\033[92mOK - {}\033[0m\n".format(text));

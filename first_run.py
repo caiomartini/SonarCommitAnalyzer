@@ -39,10 +39,11 @@ if not os.path.isfile(file):
                 "sonar.projectKey={key}\n"\
                 "sonar.projectName={system}\n"\
                 "sonar.projectVersion={version}\n"\
+                "sonar.sources={sources}\n"\
+                "sonar.inclusions={files}\n"\
+                "sonar.language={language}\n"\
                 "\n"\
-                "sonar.sources={path}\n"\
-                "sonar.language={language}"\
-                "\n"\
+                "sonar.branch={branch}\n"
                 "sonar.analysis.mode=preview\n"\
                 "\n"\
                 "sonar.issuesReport.html.enable=true\n"\
