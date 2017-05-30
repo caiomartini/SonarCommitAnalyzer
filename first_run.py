@@ -37,19 +37,20 @@ if not os.path.isfile(file):
                 "\n"\
                 "sonar.projectBaseDir={repository}\n"\
                 "sonar.projectKey={key}\n"\
-                "sonar.projectName={system}\n"\
-                "sonar.projectVersion={version}\n"\
-                "sonar.sources={sources}\n"\
+                "sonar.projectName={key}\n"\
+                "sonar.projectVersion={branch}\n"\
+                "sonar.sources=.\n"\
                 "sonar.inclusions={files}\n"\
                 "sonar.language={language}\n"\
                 "\n"\
-                "sonar.branch={branch}\n"
                 "sonar.analysis.mode=preview\n"\
                 "\n"\
                 "sonar.issuesReport.html.enable=true\n"\
                 "sonar.issuesReport.html.location=C:/Sonar/issues-report/{system}/\n"\
                 "sonar.issuesReport.html.name=issues-report-{system}\n"\
-                "sonar.issuesReport.console.enable=true")
+                "sonar.issuesReport.console.enable=true\n"\
+                "\n"\
+                "sonar.modules={modules}")
 
 print("OK > Directories created.")
 

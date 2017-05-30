@@ -42,7 +42,7 @@ def verify_branch_merging(git_command):
         system_exit_ok()
 
 def find_systems_and_keys(repository):
-    """ Created for Mitsui. Function find systems and keys in ps1 file. """
+    """ Function find systems and keys in ps1 file. """
     try:
         file = repository + "Configuracoes.ps1"
 
@@ -52,7 +52,6 @@ def find_systems_and_keys(repository):
         }
 
         systems_keys = []
-
         with open(file, encoding="utf8") as f:
             for line in f:
                 if "new-DotNetSolution -ID" in line:
@@ -84,6 +83,22 @@ def find_systems_and_keys(repository):
         return systems_keys
     except Exception:
         error_text("Não foi possível encontrar os sistemas no arquivo Configuracoes.ps1.")
+        system_exit_ok()
+
+def write_modules(modules_list, files, system):
+    try:
+        modules = ""
+        if len(modules_list) > 0:
+            modules = sorted(modules_list)
+            modules = ",".join(sorted({module[0].title() for module in modules_list})) + "\n"
+            for module in modules_list:
+                module_files = ",".join({file["File"] for file in files if file["System"] == system and module[1] in os.path.dirname(file["File"])})
+                modules += "\n"
+                modules += "{}.sonar.projectBaseDir={}\n".format(module[0], module[1])
+                modules += "{}.sonar.inclusions={}\n".format(module[0], "no_file.cs" if module_files == "" else module_files)
+        return modules
+    except Exception as err:
+        error_text("Não foi possível gerar os modulos do SonarQube.")
         system_exit_ok()
 
 def system_exit_block_commit():

@@ -29,6 +29,9 @@ class CommitAnalyzer(object):
         self.git_repository = git.Repo(self.base_repository)
         self.git_command = git.Git(self.base_repository)
         self.systems_and_keys = utils.find_systems_and_keys(self.base_ci)
+
+        self.modules = config.configsectionmap("Modules")
+
         self.files = []
         self.systems = []
         self.scanner_error = False
@@ -154,13 +157,13 @@ class CommitAnalyzer(object):
             "{password}": self.sonar_password,
             "{repository}": self.base_repository,
             "{key}": list({item["Key"] for item in self.systems_and_keys if item["System"] == system})[0],
-            "{system}": system,
-            "{version}": list({item["Version"] for item in self.systems_and_keys if item["System"] == system})[0],
-            "{sources}": ",".join({file["File"] for file in self.files if file["System"] == system}),
+            "{branch}": self.git_repository.active_branch.name,
             "{files}": ",".join({file["File"] for file in self.files if file["System"] == system}),
             "{language}": list({item["Language"] for item in self.systems_and_keys if item["System"] == system})[0],
-            "{branch}": self.git_repository.active_branch.name
+            "{system}": system         
         }
+                
+        replacements.update({"{modules}": utils.write_modules(self.modules.items(), self.files, system)})
         
         lines = []
         with open(self.sonar_template) as infile:
