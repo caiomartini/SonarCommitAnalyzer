@@ -92,10 +92,10 @@ def write_modules(modules_list, files, system):
             modules = sorted(modules_list)
             modules = ",".join(sorted({module[0].title() for module in modules_list})) + "\n"
             for module in modules_list:
-                module_files = ",".join({file["File"] for file in files if file["System"] == system and module[1] in os.path.dirname(file["File"])})
+                module_files = ",".join({file["File"].replace(module[1], "**") for file in files if file["System"] == system and module[1] in os.path.dirname(file["File"])})
                 modules += "\n"
-                modules += "{}.sonar.projectBaseDir={}\n".format(module[0], module[1])
-                modules += "{}.sonar.inclusions={}\n".format(module[0], "no_file.cs" if module_files == "" else module_files)
+                modules += "{}.sonar.projectBaseDir={}\n".format(module[0].title(), module[1])
+                modules += "{}.sonar.inclusions={}\n".format(module[0].title(), "no_file.cs" if module_files == "" else module_files)
         return modules
     except Exception as err:
         error_text("Nao foi possivel gerar os modulos do SonarQube.")
