@@ -52,7 +52,7 @@ if not os.path.isfile(file):
                 "\n"\
                 "sonar.modules={modules}")
 
-print("OK > Directories created.")
+print("OK - Directories created.")
 
 print(">> Instal GitPython ...")
 

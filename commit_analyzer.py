@@ -52,7 +52,7 @@ class CommitAnalyzer(object):
                             return file_dictionary
 
         except Exception:
-            utils.error_text("Não foi possível encontrar os sistemas a partir dos arquivos modificados.")
+            utils.error_text("Nao foi possivel encontrar os sistemas a partir dos arquivos modificados.")
             utils.system_exit_ok()
 
     def find_modified_systems(self, file):
@@ -64,7 +64,7 @@ class CommitAnalyzer(object):
             return file_dictionary
 
         except Exception:
-            utils.error_text("Não foi possível encontrar os sistemas a partir dos arquivos modificados.")
+            utils.error_text("Nao foi possivel encontrar os sistemas a partir dos arquivos modificados.")
             utils.system_exit_ok()
 
     def find_modified_files(self):
@@ -99,7 +99,7 @@ class CommitAnalyzer(object):
                 files = sorted(files)
                 for file in files:
                     utils.print_(" - " + file)
-                    # To show characters ├ and └ (not working in pearl)
+                    # To show characters ├ and └ (not working in pearl script)
                     #if list(files).index(file) == len(files)-1:
                     #    utils.print_(u"       \u2514 " + file)
                     #else:
@@ -107,19 +107,19 @@ class CommitAnalyzer(object):
             utils.print_("")
 
         except Exception:
-            utils.error_text("Não foi possível encontrar os arquivos modificados no stage.")
+            utils.error_text("Nao foi possivel encontrar os arquivos modificados no stage.")
             utils.system_exit_ok()
 
     def remove_configuration_file(self, system):
         """ Function to remove sonar configuration file. """
-        utils.print_(">> Removendo arquivo de configuração ...")        
+        utils.print_(">> Removendo arquivo de configuracao ...")        
 
         try:
             utils.remove_file(self.sonar_folder + "{}.sonarsource.properties".format(system))
             utils.ok_text("Arquivo {}.sonarsource.properties removido com sucesso.".format(system))
 
         except Exception:
-            utils.error_text("Não foi possível remover o arquivo de configuração do sistema {}".format(system))
+            utils.error_text("Nao foi possivel remover o arquivo de configuracao do sistema {}".format(system))
             utils.system_exit_ok()
 
     def run_sonar(self, system):
@@ -131,25 +131,25 @@ class CommitAnalyzer(object):
             output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
 
             if "EXECUTION FAILURE" in output.stdout:
-                utils.error_text("Não foi possível executar o SonarQube no sistema {}".format(system))
+                utils.error_text("Nao foi possivel executar o SonarQube no sistema {}".format(system))
                 utils.system_exit_ok()
 
             if "major" in output.stdout or "critical" in output.stdout:
                 webbrowser.open(self.sonar_folder + "issues-report/{}/issues-report-{}.html".format(system, system), new=2)
-                utils.ok_text("Relatório disponibilizado no navegador.")
+                utils.ok_text("Relatorio disponibilizado no navegador.")
                 self.scanner_error = True
             else:
-                utils.ok_text("Análise concluída.")
+                utils.ok_text("Analise concluida.")
 
         except Exception:
-            utils.error_text("Não foi possível executar o SonarQube no sistema {}".format(system))
+            utils.error_text("Nao foi possivel executar o SonarQube no sistema {}".format(system))
             utils.system_exit_ok()
 
         self.remove_configuration_file(system)
 
     def preparing_sonar(self, system):
         """ Function to preparing sonar-scanner execution. """
-        utils.print_(">> Preparando execução do SonarQube no sistema {} ...".format(system))        
+        utils.print_(">> Preparando execucao do SonarQube no sistema {} ...".format(system))        
 
         replacements = {
             "{url}": self.sonar_server,
@@ -181,11 +181,11 @@ class CommitAnalyzer(object):
     def commit_analyzer(self):
         """ Main function to analyze commit. """
 
-        utils.verify_branch_merging(self.git_command)
+        utils.verify_branch_is_merging(self.git_command)
 
         if self.scan_status:
             utils.print_("\n>-------------------------------------------<")
-            utils.print_("> ANÁLISE DE CÓDIGO PELO SONARQUBE INICIADO <")
+            utils.print_("> ANALISE DE CODIGO PELO SONARQUBE INICIADO <")
             utils.print_(">-------------------------------------------<\n")
 
             self.find_modified_files()
@@ -197,14 +197,14 @@ class CommitAnalyzer(object):
                 self.run_sonar(system)
 
             utils.remove_folder("{}.scannerwork".format(self.base_repository))
-            utils.print_(">> Análise de qualidade de código pelo SonarQube finalizada.")
+            utils.print_(">> Analise de qualidade de codigo pelo SonarQube finalizada.")
 
             if self.scanner_error:
-                utils.warning_text("Existem problemas críticos de qualidade, verifique o relatório no navegador. Commit recusado.")
+                utils.warning_text("Existem problemas criticos de qualidade, verifique o relatorio no navegador. Commit recusado.")
                 utils.system_exit_block_commit()
             else:
                 utils.ok_text("Nenhum problema encontrado. Commit liberado.")
                 utils.system_exit_ok()
         else:
-            utils.warning_text(">> Análise de qualidade de código pelo SonarQube está desativada.")
+            utils.warning_text(">> Analise de qualidade de codigo pelo SonarQube esta desativada. Commit liberado.")
             utils.system_exit_ok()

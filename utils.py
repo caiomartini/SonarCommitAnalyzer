@@ -10,17 +10,17 @@ def print_(text):
 
 def verify_sonar_response(url):
     """ Function to verify SonarQube is running on server. """
-    print_(">> Verificando se SonarQube está em execução no servidor ...")
+    print_(">> Verificando se SonarQube esta em execucao no servidor ...")
 
     try:
         http_url = url.replace("http://", "")
         sonarhttp = http.client.HTTPConnection(http_url)
         sonarhttp.request("HEAD", "/")
         response = sonarhttp.getresponse()
-        ok_text("SonarQube em execução no servidor {}.".format(url))
+        ok_text("SonarQube em execucao no servidor {}.".format(url))
 
     except Exception:
-        error_text("SonarQube não está em execução. Commit liberado.")
+        error_text("SonarQube nao esta em execucao. Commit liberado.")
         system_exit_ok()
 
 def remove_file(file):
@@ -33,12 +33,12 @@ def remove_folder(folder):
     if os.path.isdir(folder):
         shutil.rmtree(folder)
 
-def verify_branch_merging(git_command):
+def verify_branch_is_merging(git_command):
     """ Function to verify branch is merging. """
     branch_merging = git_command.execute("git status")
 
     if "All conflicts fixed but you are still merging." in branch_merging:
-        ok_text(">> Commit de MERGE. SonarQube não será executado.")
+        ok_text(">> Commit de MERGE. SonarQube nao sera executado.")
         system_exit_ok()
 
 def find_systems_and_keys(repository):
@@ -82,7 +82,7 @@ def find_systems_and_keys(repository):
 
         return systems_keys
     except Exception:
-        error_text("Não foi possível encontrar os sistemas no arquivo Configuracoes.ps1.")
+        error_text("Nao foi possível encontrar os sistemas no arquivo Configuracoes.ps1.")
         system_exit_ok()
 
 def write_modules(modules_list, files, system):
@@ -98,7 +98,7 @@ def write_modules(modules_list, files, system):
                 modules += "{}.sonar.inclusions={}\n".format(module[0], "no_file.cs" if module_files == "" else module_files)
         return modules
     except Exception as err:
-        error_text("Não foi possível gerar os modulos do SonarQube.")
+        error_text("Nao foi possivel gerar os modulos do SonarQube.")
         system_exit_ok()
 
 def system_exit_block_commit():
