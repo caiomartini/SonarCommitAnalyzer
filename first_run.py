@@ -50,7 +50,7 @@ with open(file, "w") as f:
         "sonar.issuesReport.html.name=issues-report-{system}\n"\
         "sonar.issuesReport.console.enable=true\n"\
         "\n"\
-        "sonar.modules={modules}")
+        "{modules}")
 
 print("OK - Directories created.")
 

@@ -88,14 +88,15 @@ def find_systems_and_keys(repository):
 def write_modules(modules_list, files, system):
     try:
         modules = ""
-        if len(modules_list) > 0:
-            modules = sorted(modules_list)
-            modules = ",".join(sorted({module[0].title() for module in modules_list})) + "\n"
-            for module in modules_list:
-                module_files = ",".join({file["File"].replace(module[1], "**") for file in files if file["System"] == system and module[1] in os.path.dirname(file["File"])})
-                modules += "\n"
-                modules += "{}.sonar.projectBaseDir={}\n".format(module[0].title(), module[1])
-                modules += "{}.sonar.inclusions={}\n".format(module[0].title(), "no_file.cs" if module_files == "" else module_files)
+        if "MS10Plus" in system or "MS10Plus_Malha" in system:
+            if len(modules_list) > 0:
+                modules = sorted(modules_list)
+                modules = "sonar.modules=" + ",".join(sorted({module[0].title() for module in modules_list})) + "\n"
+                for module in modules_list:
+                    module_files = ",".join({file["File"].replace(module[1], "**") for file in files if file["System"] == system and module[1] in os.path.dirname(file["File"])})
+                    modules += "\n"
+                    modules += "{}.sonar.projectBaseDir={}\n".format(module[0].title(), module[1])
+                    modules += "{}.sonar.inclusions={}\n".format(module[0].title(), "no_file.cs" if module_files == "" else module_files)
         return modules
     except Exception as err:
         error_text("Nao foi possivel gerar os modulos do SonarQube.")
@@ -108,10 +109,10 @@ def system_exit_ok():
     sys.exit(0)
 
 def warning_text(text):
-    print_("\033[93mWARNING - {}\033[0m\n".format(text));
+    print_("\033[93mWARNING - {}\033[0m\n".format(text))
 
 def ok_text(text):
-    print_("\033[92mOK - {}\033[0m\n".format(text));
+    print_("\033[92mOK - {}\033[0m\n".format(text))
 
 def error_text(text):
-    print_("\033[91mERROR - {}\033[0m\n".format(text));
+    print_("\033[91mERROR - {}\033[0m\n".format(text))

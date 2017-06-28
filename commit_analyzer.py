@@ -160,10 +160,9 @@ class CommitAnalyzer(object):
             "{branch}": self.git_repository.active_branch.name,
             "{files}": ",".join({file["File"] for file in self.files if file["System"] == system}),
             "{language}": list({item["Language"] for item in self.systems_and_keys if item["System"] == system})[0],
-            "{system}": system         
+            "{system}": system,
+            "{modules}": utils.write_modules(self.modules.items(), self.files, system)     
         }
-                
-        replacements.update({"{modules}": utils.write_modules(self.modules.items(), self.files, system)})
         
         lines = []
         with open(self.sonar_template) as infile:
