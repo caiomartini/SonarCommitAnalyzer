@@ -10,7 +10,7 @@ Code analysis with SonarQube in pre-commit.
 - [GitPython](https://gitpython.readthedocs.io/en/stable/index.html)
 
 # Setting up
-1. Install Python 3.6.1;
+1. Install [Python 3.6.1](https://www.python.org/ftp/python/3.6.1/python-3.6.1-amd64.exe);
 2. Clone this repository;
 3. Execute `python first_run.py` in cmd prompt;
 4. Verify that the directory has been created:
