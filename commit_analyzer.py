@@ -9,7 +9,8 @@ import utils
 class CommitAnalyzer(object):
     """ Class to analyze commit. """
     def __init__(self):
-        config = config_tool.ConfigTool("{replace}/SonarCommitAnalyzer/config.ini")
+        absolute_file_path = os.path.abspath(__file__).replace(os.path.relpath(__file__), "")
+        config = config_tool.ConfigTool(absolute_file_path + "\\config.ini")
 
         sonarconfigs = config.configsectionmap("Sonar")
         self.sonar_scanner = sonarconfigs["scanner"]
