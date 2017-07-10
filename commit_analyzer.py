@@ -183,9 +183,9 @@ class CommitAnalyzer(object):
         utils.verify_branch_is_merging(self.git_command)
 
         if self.scan_status:
-            utils.print_("\n>-------------------------------------------<")
-            utils.print_("> ANALISE DE CODIGO PELO SONARQUBE INICIADO <")
-            utils.print_(">-------------------------------------------<\n")
+            utils.print_("\n")
+            utils.print_(">    ANALISE DE CODIGO PELO SONARQUBE INICIADO   <")
+            utils.print_(">------------------------------------------------<\n")
 
             self.find_modified_files()
 
