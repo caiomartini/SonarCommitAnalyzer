@@ -9,7 +9,7 @@ import utils
 class CommitAnalyzer(object):
     """ Class to analyze commit. """
     def __init__(self):
-        config = config_tool.ConfigTool("./config.ini")
+        config = config_tool.ConfigTool("{replace}/SonarCommitAnalyzer/config.ini")
 
         sonarconfigs = config.configsectionmap("Sonar")
         self.sonar_scanner = sonarconfigs["scanner"]
@@ -88,7 +88,6 @@ class CommitAnalyzer(object):
                 utils.ok_text("Nenhum arquivo alterado.")
                 utils.system_exit_ok()
 
-            utils.print_("Arquivos alterados:")
             self.systems = {file["System"] for file in self.files}
             self.systems = sorted(self.systems)            
 
