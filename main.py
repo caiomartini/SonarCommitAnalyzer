@@ -1,3 +1,3 @@
-from commit_analyzer import CommitAnalyzer
+from analyzer import CommitAnalyzer
 
 CommitAnalyzer().commit_analyzer()
