@@ -22,8 +22,7 @@ C:\Sonar\
     └ template.sonarsource.properties
 ```
 5. Update the `config.ini` to add the settings of your sonarqube server, repository, systems and on/off scan;
-6. Update `commit_analyzer.py` to set config.ini path `ConfigTool("{replace}/SonarCommitAnalyzer/config.ini")`.
-7. Update or create pre-commit file in the git hook folder of the repository `{your_repository}\.git\hooks\pre-commit`. The file should contain the following content:
+6. Update or create pre-commit file in the git hook folder of the repository `{your_repository}\.git\hooks\pre-commit`. The file should contain the following content:
 ```
 #!/bin/sh
 python "{replace}\SonarCommitAnalyzer\main.py"
