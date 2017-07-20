@@ -9,7 +9,7 @@ from config import ConfigTool
 class CommitAnalyzer(object):
     """ Class to analyze commit. """
     def __init__(self):
-        absolute_file_path = os.path.abspath(__file__).replace(os.path.relpath(__file__), "")
+        absolute_file_path = os.path.abspath(__file__).replace(os.path.basename(__file__), "")
         config = ConfigTool(absolute_file_path + "\\config.ini")
 
         sonarconfigs = config.configsectionmap("Sonar")
