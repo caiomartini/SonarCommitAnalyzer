@@ -87,17 +87,27 @@ def find_systems_and_keys(repository):
 
 def write_modules(modules_list, files, system):
     try:
-        modules = ""
+        modules = []
+        modules_string = ""
         if "MS10Plus" in system or "MS10Plus_Malha" in system:
             if len(modules_list) > 0:
-                modules = sorted(modules_list)
-                modules = "sonar.modules=" + ",".join(sorted({module[0].title() for module in modules_list})) + "\n"
+                modules_list = sorted(modules_list)
                 for module in modules_list:
-                    module_files = ",".join({file["File"].replace(module[1], "**") for file in files if file["System"] == system and module[1] in os.path.dirname(file["File"])})
-                    modules += "\n"
-                    modules += "{}.sonar.projectBaseDir={}\n".format(module[0].title(), module[1])
-                    modules += "{}.sonar.inclusions={}\n".format(module[0].title(), "no_file.cs" if module_files == "" else module_files)
-        return modules
+                    module_files = ",".join({file["File"].replace(module[1] + "/", "") for file in files if file["System"] == system and module[1] in os.path.dirname(file["File"])})
+                    if module_files != "":
+                        module_title = "WebServices" if "webservices" in module[0] else module[0].title()
+                        module_dict = {
+                            "Module": module_title,
+                            "BaseDir": "{}.sonar.projectBaseDir={}".format(module_title, module[1]),
+                            "Files": "{}.sonar.inclusions={}".format(module_title, module_files)
+                        }
+                        modules.append(module_dict)
+                modules_string = "sonar.modules=" + ",".join(sorted({module["Module"] for module in modules})) + "\n"
+                for module in modules:
+                    modules_string += "\n"
+                    modules_string += module["BaseDir"] + "\n"
+                    modules_string += module["Files"] + "\n"            
+        return modules_string
     except Exception as err:
         error_text("Nao foi possivel gerar os modulos do SonarQube.")
         system_exit_ok()
