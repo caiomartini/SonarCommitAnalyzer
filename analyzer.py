@@ -4,6 +4,7 @@ import sys
 import webbrowser
 import git
 import utils
+import time
 from config import ConfigTool
 
 class CommitAnalyzer(object):
@@ -128,13 +129,13 @@ class CommitAnalyzer(object):
 
         try:
             command = self.sonar_scanner + " -D project.settings={}{}.sonarsource.properties".format(self.sonar_folder, system)
-            output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
+            output = subprocess.check_output(command, shell=True, encoding="utf-8")
 
-            if "EXECUTION FAILURE" in output.stdout:
+            if "EXECUTION FAILURE" in output:
                 utils.error_text("Nao foi possivel executar o SonarQube no sistema {}".format(system))
                 utils.system_exit_ok()
 
-            if "major" in output.stdout or "critical" in output.stdout:
+            if "major" in output or "critical" in output:
                 webbrowser.open(self.sonar_folder + "issues-report/{}/issues-report-{}.html".format(system, system), new=2)
                 utils.ok_text("Relatorio disponibilizado no navegador.")
                 self.scanner_error = True
@@ -187,6 +188,8 @@ class CommitAnalyzer(object):
             utils.print_(" ANALISE DE CODIGO PELO SONARQUBE INICIADO")
             utils.print_("=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=\n")
 
+            start_time = time.time()
+
             self.find_modified_files()
 
             utils.verify_sonar_response(self.sonar_server)
@@ -197,6 +200,10 @@ class CommitAnalyzer(object):
 
             utils.remove_folder("{}.scannerwork".format(self.base_repository))
             utils.print_(">> Analise de qualidade de codigo pelo SonarQube finalizada.")
+
+            hours, rem = divmod(time.time() - start_time, 3600)
+            minutes, seconds = divmod(rem, 60)
+            utils.print_(">> Tempo de execucao: {:0>2}:{:0>2}:{:05.2f}\n".format(int(hours),int(minutes),seconds))            
 
             if self.scanner_error:
                 utils.warning_text("Existem problemas criticos de qualidade, verifique o relatorio no navegador. Commit recusado.")

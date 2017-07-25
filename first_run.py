@@ -3,17 +3,18 @@ import urllib.request
 import zipfile
 import shutil
 import os
+import utils
 
 url_sonar_scanner = "https://sonarsource.bintray.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-3.0.3.778-windows.zip"
 sonar_scanner_zip = "C:/Sonar/sonar-scanner.zip"
 
-print(">> Configuring First Run ...")
+utils.print_(">> Configuring First Run ...")
 
 directory = "C:/Sonar"
 os.makedirs(directory, exist_ok=True)
 if not os.path.exists("C:/Sonar/sonar-scanner"):
     if not os.path.exists(sonar_scanner_zip):
-        print(">> Downloading Sonar Scanner ...")
+        utils.print_(">> Downloading Sonar Scanner ...")
         urllib.request.urlretrieve(url_sonar_scanner, sonar_scanner_zip)    
 
 if os.path.exists(sonar_scanner_zip):
@@ -37,7 +38,7 @@ with open(file, "w") as f:
         "\n"\
         "sonar.projectBaseDir={repository}\n"\
         "sonar.projectKey={key}\n"\
-        "sonar.projectName={key}\n"\
+        "sonar.projectName={system}\n"\
         "sonar.projectVersion={branch}\n"\
         "sonar.sources=.\n"\
         "sonar.inclusions={files}\n"\
@@ -52,10 +53,10 @@ with open(file, "w") as f:
         "\n"\
         "{modules}")
 
-print("OK - Directories created.")
+utils.ok_text("Directories created.")
 
-print(">> Instal GitPython ...")
+utils.print_(">> Instal GitPython ...")
 
-output = subprocess.run("pip install GitPython", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
+output = subprocess.check_output("pip install GitPython", shell=True, encoding="utf-8")
 
-print(output.stdout)
+utils.print_(output)
