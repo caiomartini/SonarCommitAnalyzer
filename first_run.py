@@ -57,6 +57,6 @@ utils.ok_text("Directories created.")
 
 utils.print_(">> Instal GitPython ...")
 
-output = subprocess.check_output("pip install GitPython", shell=True, encoding="utf-8")
+output = subprocess.run("pip install GitPython", stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
 
-utils.print_(output)
+utils.print_(output.stdout)

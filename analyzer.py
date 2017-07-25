@@ -129,13 +129,13 @@ class CommitAnalyzer(object):
 
         try:
             command = self.sonar_scanner + " -D project.settings={}{}.sonarsource.properties".format(self.sonar_folder, system)
-            output = subprocess.check_output(command, shell=True, encoding="utf-8")
+            output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
 
-            if "EXECUTION FAILURE" in output:
+            if "EXECUTION FAILURE" in output.stdout:
                 utils.error_text("Nao foi possivel executar o SonarQube no sistema {}".format(system))
                 utils.system_exit_ok()
 
-            if "major" in output or "critical" in output:
+            if "major" in output.stdout or "critical" in output.stdout:
                 webbrowser.open(self.sonar_folder + "issues-report/{}/issues-report-{}.html".format(system, system), new=2)
                 utils.ok_text("Relatorio disponibilizado no navegador.")
                 self.scanner_error = True
