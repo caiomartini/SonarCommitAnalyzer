@@ -100,11 +100,6 @@ class CommitAnalyzer(object):
                 files = sorted(files)
                 for file in files:
                     utils.print_(" - " + file)
-                    # To show characters ├ and └ (not working in pearl script)
-                    #if list(files).index(file) == len(files)-1:
-                    #    utils.print_(u"       \u2514 " + file)
-                    #else:
-                    #    utils.print_(u"       \u251c " + file)
             utils.print_("")
 
         except Exception:
@@ -159,12 +154,16 @@ class CommitAnalyzer(object):
             "{repository}": self.base_repository,
             "{key}": list({item["Key"] for item in self.systems_and_keys if item["System"] == system})[0],
             "{branch}": self.git_repository.active_branch.name,
+            "{sources}": "sonar.sources=" + ",".join({file["File"] for file in self.files if file["System"] == system}),
             "{files}": ",".join({file["File"] for file in self.files if file["System"] == system}),
             "{language}": list({item["Language"] for item in self.systems_and_keys if item["System"] == system})[0],
             "{system}": system,
             "{modules}": utils.write_modules(self.modules.items(), self.files, system)     
         }
         
+        if replacements["{modules}"] != "":
+            replacements.update({"{sources}": ""})
+
         lines = []
         with open(self.sonar_template) as infile:
             for line in infile:

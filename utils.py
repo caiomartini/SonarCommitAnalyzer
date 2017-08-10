@@ -99,14 +99,14 @@ def write_modules(modules_list, files, system):
                         module_dict = {
                             "Module": module_title,
                             "BaseDir": "{}.sonar.projectBaseDir={}".format(module_title, module[1]),
-                            "Files": "{}.sonar.inclusions={}".format(module_title, module_files)
+                            "Sources": "{}.sonar.sources={}".format(module_title, module_files)
                         }
                         modules.append(module_dict)
                 modules_string = "sonar.modules=" + ",".join(sorted({module["Module"] for module in modules})) + "\n"
                 for module in modules:
                     modules_string += "\n"
                     modules_string += module["BaseDir"] + "\n"
-                    modules_string += module["Files"] + "\n"            
+                    modules_string += module["Sources"] + "\n"          
         return modules_string
     except Exception as err:
         error_text("Nao foi possivel gerar os modulos do SonarQube.")
