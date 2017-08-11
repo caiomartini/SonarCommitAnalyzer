@@ -61,20 +61,17 @@ def find_systems_and_keys(repository):
                     key = find_line[find_line.index("-ID") + 1]
                     solution_path = find_line[find_line.index("-Solution") + 1].replace(solution[len(solution)-1], "")
                     solution = list({index for index in find_line[find_line.index("-Solution") + 1].split("\\") if ".sln" in index})[0].replace(".sln", "")
-                    version = find_line[find_line.index("-Version") + 1]
                     language = find_line[find_line.index("-Language") + 1]
 
                     for src, target in replacements.items():
                         key = key.replace(src, target)
                         solution = solution.replace(src, target)
-                        version = version.replace(src, target)
                         language = language.replace(src, target)
 
                     system = {
                         "System": solution,
                         "Key": key,
                         "Solution_Path": solution_path,
-                        "Version": version,
                         "Language": language
                     }
 
