@@ -123,7 +123,7 @@ class CommitAnalyzer(object):
         utils.print_(">> Executando SonarQube no sistema {} ...".format(system))        
 
         try:
-            command = self.sonar_scanner + " -D project.settings={}{}.sonarsource.properties".format(self.sonar_folder, system)
+            command = self.sonar_scanner + " -D sonar.host.url={} -D project.settings={}{}.sonarsource.properties".format(self.sonar_server, self.sonar_folder, system)
             output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
 
             if "EXECUTION FAILURE" in output.stdout:
