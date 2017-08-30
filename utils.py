@@ -2,6 +2,8 @@ import sys
 import http.client
 import os
 import shutil
+import subprocess
+import json
 
 def print_(text):
     """ Function to print and flush console. """
@@ -14,7 +16,7 @@ def verify_sonar_response(url):
 
     try:
         http_url = url.replace("http://", "")
-        sonarhttp = http.client.HTTPConnection(http_url)
+        sonarhttp = http.client.HTTPConnection(http_url, None, 10)
         sonarhttp.request("HEAD", "/")
         response = sonarhttp.getresponse()
         ok_text("SonarQube em execucao no servidor {}.".format(url))
@@ -42,45 +44,15 @@ def verify_branch_is_merging(git_command):
         system_exit_ok()
 
 def find_systems_and_keys(repository):
-    """ Function find systems and keys in ps1 file. """
     try:
         file = repository + "Configuracoes.ps1"
-
-        replacements = {
-            "),\n": "",
-            ")\n": ""
-        }
-
-        systems_keys = []
-        with open(file, encoding="utf8") as f:
-            for line in f:
-                if "new-DotNetSolution -ID" in line:
-                    find_line = list(line.replace("'", "").split(" "))
-
-                    solution = find_line[find_line.index("-Solution") + 1].split("\\")
-                    key = find_line[find_line.index("-ID") + 1]
-                    solution_path = find_line[find_line.index("-Solution") + 1].replace(solution[len(solution)-1], "")
-                    solution = list({index for index in find_line[find_line.index("-Solution") + 1].split("\\") if ".sln" in index})[0].replace(".sln", "")
-                    language = find_line[find_line.index("-Language") + 1]
-
-                    for src, target in replacements.items():
-                        key = key.replace(src, target)
-                        solution = solution.replace(src, target)
-                        language = language.replace(src, target)
-
-                    system = {
-                        "System": solution,
-                        "Key": key,
-                        "Solution_Path": solution_path,
-                        "Language": language
-                    }
-
-                    systems_keys.append(system)
-
-        return systems_keys
+        command = ["powershell.exe", ". \"{}\";".format(file), "&obtemListaSolutionsDotNet | ConvertTo-Json"]
+        output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+        json_systems = json.loads(output.stdout)
+        return json_systems
     except Exception:
         error_text("Nao foi possível encontrar os sistemas no arquivo Configuracoes.ps1.")
-        system_exit_ok()
+        system_exit_ok()    
 
 def write_modules(modules_list, files, system):
     try:

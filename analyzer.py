@@ -50,8 +50,7 @@ class CommitAnalyzer(object):
                 for _, _, files in os.walk(folder):
                     for file_system in files:
                         if file_system.endswith(".sln"):
-                            file_dictionary = {"System": file_system.replace(".sln", ""), "File": file}
-                            return file_dictionary
+                            return file_system
 
         except Exception:
             utils.error_text("Nao foi possivel encontrar os sistemas a partir dos arquivos modificados.")
@@ -60,10 +59,14 @@ class CommitAnalyzer(object):
     def find_modified_systems(self, file):
         """ Function to find systems. """
         try:
-            file = file.a_path
-            system = list({system["System"] for system in self.systems_and_keys if system["Solution_Path"].replace("\\", "/") in file})[0]
-            file_dictionary = {"System": system, "File": file}
-            return file_dictionary
+            solution = self.find_modifed_systems_in_file_folders(file)
+            system = list({system["Solution"] for system in self.systems_and_keys if solution in system["Solution"]})[0]            
+            solution = system.split("\\")
+            solution_path = system.replace(solution[len(solution)-1], "")
+            system = solution[len(solution)-1].replace(".sln", "")
+            if str(solution_path.replace("\\", "/")).upper() in file.a_path.upper():
+                file_dictionary = {"System": system, "File": file.a_path}
+                return file_dictionary            
 
         except Exception:
             utils.error_text("Nao foi possivel encontrar os sistemas a partir dos arquivos modificados.")
@@ -99,7 +102,7 @@ class CommitAnalyzer(object):
                 files = {file["File"] for file in self.files if file["System"] == system}
                 files = sorted(files)
                 for file in files:
-                    utils.print_(" - " + file)
+                    utils.print_(" | " + file)
             utils.print_("")
 
         except Exception:
@@ -147,18 +150,23 @@ class CommitAnalyzer(object):
         """ Function to preparing sonar-scanner execution. """
         utils.print_(">> Preparando execucao do SonarQube no sistema {} ...".format(system))        
 
+        key = list({item["ID"] for item in self.systems_and_keys if system in item["Solution"]})[0]
+        language = list({item["Language"] for item in self.systems_and_keys if system in item["Solution"]})[0]
+        files = ",".join({file["File"] for file in self.files if file["System"] == system})
+        modules = utils.write_modules(self.modules.items(), self.files, system)
+
         replacements = {
             "{url}": self.sonar_server,
             "{login}": self.sonar_login,
             "{password}": self.sonar_password,
             "{repository}": self.base_repository,
-            "{key}": list({item["Key"] for item in self.systems_and_keys if item["System"] == system})[0],
+            "{key}": key,
             "{branch}": self.git_repository.active_branch.name,
-            "{sources}": "sonar.sources=" + ",".join({file["File"] for file in self.files if file["System"] == system}),
-            "{files}": ",".join({file["File"] for file in self.files if file["System"] == system}),
-            "{language}": list({item["Language"] for item in self.systems_and_keys if item["System"] == system})[0],
+            "{sources}": "sonar.sources=" + files,
+            "{files}": files,
+            "{language}": language,
             "{system}": system,
-            "{modules}": utils.write_modules(self.modules.items(), self.files, system)     
+            "{modules}": modules     
         }
         
         if replacements["{modules}"] != "":
