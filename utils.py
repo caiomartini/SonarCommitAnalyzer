@@ -16,7 +16,7 @@ def verify_sonar_response(url):
 
     try:
         http_url = url.replace("http://", "")
-        sonarhttp = http.client.HTTPConnection(http_url, None, 10)
+        sonarhttp = http.client.HTTPConnection(http_url, timeout=10)
         sonarhttp.request("HEAD", "/")
         response = sonarhttp.getresponse()
         ok_text("SonarQube em execucao no servidor {}.".format(url))
@@ -58,11 +58,11 @@ def write_modules(modules_list, files, system):
     try:
         modules = []
         modules_string = ""
-        if "MS10Plus" in system or "MS10Plus_Malha" in system:
+        if system == "MSSNET":
             if len(modules_list) > 0:
                 modules_list = sorted(modules_list)
                 for module in modules_list:
-                    module_files = ",".join({file["File"].replace(module[1] + "/", "") for file in files if file["System"] == system and module[1] in os.path.dirname(file["File"])})
+                    module_files = ",".join({file["File"].replace(module[1] + "/", "") for file in files if file["ID"] == system and module[1] in os.path.dirname(file["File"])})
                     if module_files != "":
                         module_title = "WebServices" if "webservices" in module[0] else module[0].title()
                         module_dict = {

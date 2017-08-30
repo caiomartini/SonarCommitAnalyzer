@@ -6,6 +6,7 @@ import git
 import utils
 import time
 from config import ConfigTool
+from itertools import chain
 
 class CommitAnalyzer(object):
     """ Class to analyze commit. """
@@ -60,12 +61,11 @@ class CommitAnalyzer(object):
         """ Function to find systems. """
         try:
             solution = self.find_modifed_systems_in_file_folders(file)
-            system = list({system["Solution"] for system in self.systems_and_keys if solution in system["Solution"]})[0]            
-            solution = system.split("\\")
-            solution_path = system.replace(solution[len(solution)-1], "")
-            system = solution[len(solution)-1].replace(".sln", "")
+            system = list(system for system in self.systems_and_keys if solution.upper() in system["Solution"].upper())[0]
+            solution_path = system["Solution"].upper().replace(solution.upper(), "")
+            solution = solution.replace(".sln", "")
             if str(solution_path.replace("\\", "/")).upper() in file.a_path.upper():
-                file_dictionary = {"System": system, "File": file.a_path}
+                file_dictionary = {"ID": system["ID"], "System": solution, "File": file.a_path}
                 return file_dictionary            
 
         except Exception:
@@ -93,16 +93,16 @@ class CommitAnalyzer(object):
                 utils.ok_text("Nenhum arquivo alterado.")
                 utils.system_exit_ok()
 
-            self.systems = {file["System"] for file in self.files}
-            self.systems = sorted(self.systems)            
+            self.systems = {file["ID"] for file in self.files}
+            self.systems = sorted(self.systems)     
 
             for system in self.systems:
                 index = list(self.systems).index(system)+1
-                utils.print_("{}. {}".format(index, system))
-                files = {file["File"] for file in self.files if file["System"] == system}
+                utils.print_("{}. Sistema: {}".format(index, system))
+                files = {file["File"] for file in self.files if file["ID"] == system}
                 files = sorted(files)
                 for file in files:
-                    utils.print_(" | " + file)
+                    utils.print_(" - " + file)
             utils.print_("")
 
         except Exception:
@@ -122,10 +122,10 @@ class CommitAnalyzer(object):
             utils.system_exit_ok()
 
     def run_sonar(self, system):
-        """ Function to run sonar-scanner. """
-        utils.print_(">> Executando SonarQube no sistema {} ...".format(system))        
+        """ Function to run sonar-scanner. """              
+        utils.print_(">> Executando SonarQube no sistema {} ...".format(system))  
 
-        try:
+        try:            
             command = self.sonar_scanner + " -D project.settings={}{}.sonarsource.properties".format(self.sonar_folder, system)
             output = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=True, encoding="utf-8")
 
@@ -148,11 +148,10 @@ class CommitAnalyzer(object):
 
     def preparing_sonar(self, system):
         """ Function to preparing sonar-scanner execution. """
-        utils.print_(">> Preparando execucao do SonarQube no sistema {} ...".format(system))        
+        utils.print_(">> Preparando execucao do SonarQube no sistema {} ...".format(system))   
 
-        key = list({item["ID"] for item in self.systems_and_keys if system in item["Solution"]})[0]
-        language = list({item["Language"] for item in self.systems_and_keys if system in item["Solution"]})[0]
-        files = ",".join({file["File"] for file in self.files if file["System"] == system})
+        language = list({item["Language"] for item in self.systems_and_keys if system.upper() in item["ID"].upper()})[0]
+        files = ",".join({file["File"] for file in self.files if file["ID"] == system})
         modules = utils.write_modules(self.modules.items(), self.files, system)
 
         replacements = {
@@ -160,12 +159,11 @@ class CommitAnalyzer(object):
             "{login}": self.sonar_login,
             "{password}": self.sonar_password,
             "{repository}": self.base_repository,
-            "{key}": key,
+            "{system}": system,
             "{branch}": self.git_repository.active_branch.name,
             "{sources}": "sonar.sources=" + files,
             "{files}": files,
             "{language}": language,
-            "{system}": system,
             "{modules}": modules     
         }
         

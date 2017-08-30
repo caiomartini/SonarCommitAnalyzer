@@ -37,11 +37,11 @@ with open(file, "w") as f:
         "sonar.password={password}\n"\
         "\n"\
         "sonar.projectBaseDir={repository}\n"\
-        "sonar.projectKey={key}\n"\
+        "sonar.projectKey={system}\n"\
         "sonar.projectName={system}\n"\
         "sonar.projectVersion={branch}\n"\
         "{sources}\n"\
-        "sonar.language={language}\n"\
+        "sonar.language={language}\n"\        
         "\n"\
         "sonar.analysis.mode=preview\n"\
         "\n"\
