@@ -41,7 +41,7 @@ with open(file, "w") as f:
         "sonar.projectName={system}\n"\
         "sonar.projectVersion={branch}\n"\
         "{sources}\n"\
-        "sonar.language={language}\n"\        
+        "sonar.language={language}\n"\
         "\n"\
         "sonar.analysis.mode=preview\n"\
         "\n"\
