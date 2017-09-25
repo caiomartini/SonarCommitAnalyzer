@@ -2,16 +2,14 @@
 Code analysis with SonarQube in pre-commit.
 
 ### Pre requirements
-- Git
-- Python 3.6.1
-- SonarQube
-
-### Python libraries
+- [Git](https://git-scm.com/)
+- [Python 3.6.1](https://www.python.org/ftp/python/3.6.1/python-3.6.1-amd64.exe)
 - [GitPython](https://gitpython.readthedocs.io/en/stable/index.html)
+- [SonarQube](https://www.sonarqube.org/)
 
 # Installing
-1. Install [Python 3.6.1](https://www.python.org/ftp/python/3.6.1/python-3.6.1-amd64.exe);
-2. Clone this repository;
+1. Clone this repository;
+2. Install Python;
 3. Execute `python first_run.py` in cmd prompt;
 4. Verify that the directory has been created:
 ```
