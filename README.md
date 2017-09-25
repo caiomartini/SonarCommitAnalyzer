@@ -9,7 +9,7 @@ Code analysis with SonarQube in pre-commit.
 ### Python libraries
 - [GitPython](https://gitpython.readthedocs.io/en/stable/index.html)
 
-# Setting up
+# Installing
 1. Install [Python 3.6.1](https://www.python.org/ftp/python/3.6.1/python-3.6.1-amd64.exe);
 2. Clone this repository;
 3. Execute `python first_run.py` in cmd prompt;
